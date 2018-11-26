@@ -58,17 +58,16 @@ def import_events(client):
     count += 1
 
   # each user randomly viewed 10 items
-  for user_id in user_ids:
-    for viewed_item in random.sample(item_ids, 10):
-      print("User", user_id ,"views item", viewed_item)
-      client.create_event(
-        event="view",
-        entity_type="user",
-        entity_id=user_id,
-        target_entity_type="item",
-        target_entity_id=viewed_item
-      )
-      count += 1
+  for inter in interacts_collection.find().limit(1000000):
+    print("User", inter['userid'] ,"views item", inter['movie_id'])
+    client.create_event(
+      event="view",
+      entity_type="user",
+      entity_id=inter['userid'],
+      target_entity_type="item",
+      target_entity_id= inter['movie_id']
+    )
+    count += 1
 
   print("%s events are imported." % count)
 
