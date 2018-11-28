@@ -54,7 +54,7 @@ def import_events(client):
     for movie in movies_collection.find({"_id": "2454"}, {"_source.categories": 1 }):
       for item in movie['_source']['categories']:
         this_movie_category.append(item['label'])
-        
+
     print("Set item", item_id)
     client.create_event(
       event="$set",
@@ -67,7 +67,8 @@ def import_events(client):
     movie_count += 1
 
   # each user randomly viewed 10 items
-  for inter in interacts_collection.find().limit(1000000):
+  # for inter in interacts_collection.find().limit(5000000):
+  for inter in interacts_collection.find():
     print("User", inter['userid'] ,"views item", inter['movie_id'])
     client.create_event(
       event="view",
