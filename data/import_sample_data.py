@@ -81,11 +81,6 @@ def import_events(client):
   print("%s events are imported with %s users and %s movies." % (count, user_count, movie_count))
 
 if __name__ == '__main__':
-
-
-
-
-
   # main_movie_users = interacts_collection.find({"movie_id": 2822}).distinct("userid")
   # temp = interacts_collection.find({"movie_id": 2454}).distinct("userid")
   # print(len(set(main_movie_users) & set(temp)))    # print(temp))
@@ -106,20 +101,20 @@ if __name__ == '__main__':
   #   print(set(main_movie_users) & set(temp))
   # sorted_stat = sorted(stat.items(), key=operator.itemgetter(1))
   # print(sorted_stat)
-  # parser = argparse.ArgumentParser(
-  #   description="Import sample data for similar product engine")
-  # parser.add_argument('--access_key', default='invald_access_key')
-  # parser.add_argument('--url', default="http://localhost:7070")
+  parser = argparse.ArgumentParser(
+    description="Import sample data for similar product engine")
+  parser.add_argument('--access_key', default='invald_access_key')
+  parser.add_argument('--url', default="http://localhost:7070")
 
-  # args = parser.parse_args()
-  # print(args)
+  args = parser.parse_args()
+  print(args)
 
-  # client = predictionio.EventClient(
-  #   access_key=args.access_key,
-  #   url=args.url,
-  #   threads=5,
-  #   qsize=500)
-  # import_events(client)
+  client = predictionio.EventClient(
+    access_key=args.access_key,
+    url=args.url,
+    threads=5,
+    qsize=500)
+  import_events(client)
 
 
 
