@@ -50,11 +50,11 @@ def import_events(client):
         categories.append(category['label'])
 
   for item_id in item_ids:
-      this_movie_category = []
-      for movie in movies_collection.find({"_id": "2454"}, {"_source.categories": 1 }):
-        for item in movie['_source']['categories']:
-          this_movie_category.append(item['label'])
-      
+    this_movie_category = []
+    for movie in movies_collection.find({"_id": "2454"}, {"_source.categories": 1 }):
+      for item in movie['_source']['categories']:
+        this_movie_category.append(item['label'])
+        
     print("Set item", item_id)
     client.create_event(
       event="$set",
