@@ -15,7 +15,7 @@ data = {}
 data['events'] = []
 
 
-def import_events():
+def import_events(output):
     random.seed(SEED)
     count = 0
     user_count = 0
@@ -82,7 +82,7 @@ def import_events():
 
         count += 1
 
-    with open('events.json', 'w') as outfile:
+    with open(output, 'w') as outfile:
         for document in data['events']:
             outfile.write(json_util.dumps(document) + '\n')
 
@@ -90,7 +90,15 @@ def import_events():
 
 
 if __name__ == '__main__':
-    import_events()
+    parser = argparse.ArgumentParser(
+        description="Import sample data for similar product engine")
+    # parser.add_argument('--access_key', default='invald_access_key')
+    # parser.add_argument('--url', default="http://localhost:7070")
+    parser.add_argument('--output', default="events.json")
+    args = parser.parse_args()
+    print(args)
+
+    import_events(args.output)
 
 
 
