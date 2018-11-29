@@ -1,1 +1,2 @@
 pymongo==3.7.2
+predictionio==0.9.9
