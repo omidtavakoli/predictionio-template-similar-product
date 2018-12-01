@@ -100,7 +100,7 @@ def import_events(output):
             })
             count += 1
 
-    # print("All users:%d, All Movies:%d, All Events: . Engine trained with %s events are imported with %s users and %s movies." % (len(user_ids), len(item_ids), count, user_count, movie_count))
+    print("All users:%d, All Movies:%d, All Events: . Engine trained with %s events are imported with %s users and %s movies." % (len(user_ids), len(item_ids), count, user_count, movie_count))
     # print(not_catgory)
 
 if __name__ == '__main__':
