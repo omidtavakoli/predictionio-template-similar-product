@@ -90,15 +90,16 @@ def import_events(output):
     # add users interaction events
     for inter in interacts_collection.find().limit(interacts_threshold):
         print("User", inter['userid'], "views item", inter['movie_id'])
-        if(inter['last_watch_position'] / inter['duration'] > 0.5):
-            append_record({
-                'event': 'view',
-                'entityType': 'user',
-                'entityId': inter['userid'],
-                'targetEntityType': 'item',
-                'targetEntityId': inter['movie_id']
-            })
-            count += 1
+        if(inter['duration'] > 0)
+            if(inter['last_watch_position'] / inter['duration'] > 0.5):
+                append_record({
+                    'event': 'view',
+                    'entityType': 'user',
+                    'entityId': inter['userid'],
+                    'targetEntityType': 'item',
+                    'targetEntityId': inter['movie_id']
+                })
+                count += 1
 
     print("All users:%d, All Movies:%d, All Events: . Engine trained with %s events are imported with %s users and %s movies." % (len(user_ids), len(item_ids), count, user_count, movie_count))
     # print(not_catgory)
