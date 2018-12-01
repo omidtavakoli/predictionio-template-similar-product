@@ -36,23 +36,28 @@ def import_events(output):
     for user_id in user_ids:
         print("Set user %d from %d" % (user_count, len(user_ids)))
         try:
-            append_record({
+            data['events'].append({
                 'event': '$set',
                 'entityType': 'user',
                 'entityId': user_id
             })
+            # append_record({
+            #     'event': '$set',
+            #     'entityType': 'user',
+            #     'entityId': user_id
+            # })
         except:
             print("Error")
         user_count += 1
 
     # getting all categories
-    items = movies_collection.find().distinct("_source.categories")
+    items = movies_collection.distinct("_source.categories")
     all_categories = []
     for category in items:
         all_categories.append(category['label'])
 
     # # quey for all distinct movie ids
-    items = movies_collection.find().distinct("_id")
+    items = movies_collection.distinct("_id")
 
     item_ids = []
     for x in items:
@@ -72,12 +77,18 @@ def import_events(output):
             except KeyError:
                 print('not category for movie ', item_id)
         print("Set item %d from %d" % (movie_count, len(item_ids)))
-        append_record({
+        data['events'].append({
             'event': '$set',
             'entityType': 'item',
             'entityId': item_id,
             'categories': this_movie_category if len(this_movie_category) > 0 else [0]
         })
+        # append_record({
+        #     'event': '$set',
+        #     'entityType': 'item',
+        #     'entityId': item_id,
+        #     'categories': this_movie_category if len(this_movie_category) > 0 else [0]
+        # })
         movie_count += 1
 
     # add users interaction events
@@ -86,15 +97,26 @@ def import_events(output):
         print("Set interactions %d from %d. User %d views item %d" % (count, interacts_threshold, inter['userid'], inter['movie_id']))
         if(inter['duration'] > 0):
             if(inter['last_watch_position'] / inter['duration'] > 0.5):
-                append_record({
+
+                data['events'].append({
                     'event': 'view',
                     'entityType': 'user',
                     'entityId': inter['userid'],
                     'targetEntityType': 'item',
                     'targetEntityId': inter['movie_id']
                 })
-                count += 1
 
+                # append_record({
+                #     'event': 'view',
+                #     'entityType': 'user',
+                #     'entityId': inter['userid'],
+                #     'targetEntityType': 'item',
+                #     'targetEntityId': inter['movie_id']
+                # })
+                count += 1
+    with open(output, 'w') as outfile:
+        for document in data['events']:
+            outfile.write(json_util.dumps(document) + '\n')
     print("All users:%d, All Movies:%d, All Events: . Engine trained with %s events are imported with %s users and %s movies." % (len(user_ids), len(item_ids), count, user_count, movie_count))
 
 if __name__ == '__main__':
