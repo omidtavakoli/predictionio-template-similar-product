@@ -4,21 +4,33 @@ from pymongo import MongoClient
 import json
 import newlinejson as nlj
 from bson import json_util
+import os
 
 
 mongo_client = MongoClient('els9.saba-e.com', 27028)
 db = mongo_client.recom
 interacts_collection = db.interacts
 movies_collection = db.movies
-pio_input_collection = db.pio_input
+pio_users_input_collection = db.pio_input
+pio_movies_input_collection = db.pio_input
+pio__input_collection = db.pio_input
+
 data = {}
 data['events'] = []
+not_catgory = []
 
+f= open("events.json","w+")
+
+def append_record(record):
+    with open('temp.json', 'a') as f:
+        json.dump(record, f)
+        f.write(os.linesep)
 
 def import_events(output):
     count = 0
     user_count = 0
     movie_count = 0
+    interacts_threshold = 10000000
 
     print("Importing data...")
 
@@ -26,11 +38,14 @@ def import_events(output):
     user_ids = interacts_collection.find().distinct("userid")
     for user_id in user_ids:
         print("Set user", user_id)
-        data['events'].append({
-            'event': '$set',
-            'entityType': 'user',
-            'entityId': user_id
-        })
+        try:
+            append_record({
+                'event': '$set',
+                'entityType': 'user',
+                'entityId': user_id
+            })
+        except:
+            print("Error")
         user_count += 1
 
     # getting all categories
@@ -41,6 +56,7 @@ def import_events(output):
 
     # quey for all distinct movie ids
     items = movies_collection.find().distinct("_id")
+
     item_ids = []
     for x in items:
         try:
@@ -57,21 +73,25 @@ def import_events(output):
                     this_movie_category.append(all_categories.index(item['label']))
 
             except KeyError:
+                # not_catgory.append(item_id)
                 print('not category for movie ', item_id)
-        print("Set item", item_id)
-        data['events'].append({
-            'event': '$set',
-            'entityType': 'item',
-            'entityId': item_id,
-            'categories': this_movie_category
-        })
-        movie_count += 1
+        if(len(this_movie_category) > 0):       
+            print("Set item", item_id)
+            append_record({
+                'event': '$set',
+                'entityType': 'item',
+                'entityId': item_id,
+                'categories': this_movie_category
+            })
+            movie_count += 1
+        else:
+            print("movie %d removed due to not categorized", item_id)
 
     # add users interaction events
-    for inter in interacts_collection.find().limit(5000000):
+    for inter in interacts_collection.find().limit(interacts_threshold):
         print("User", inter['userid'], "views item", inter['movie_id'])
 
-        data['events'].append({
+        append_record({
             'event': 'view',
             'entityType': 'user',
             'entityId': inter['userid'],
@@ -81,12 +101,8 @@ def import_events(output):
 
         count += 1
 
-    with open(output, 'w') as outfile:
-        for document in data['events']:
-            outfile.write(json_util.dumps(document) + '\n')
-
-    print("%s events are imported with %s users and %s movies." % (count, user_count, movie_count))
-
+    print("All users:%d, All Movies:%d, All Events: . Engine trained with %s events are imported with %s users and %s movies." % (len(user_ids), len(item_ids), count, user_count, movie_count))
+    # print(not_catgory)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -98,6 +114,8 @@ if __name__ == '__main__':
     print(args)
 
     import_events(args.output)
+
+
 
 
 
