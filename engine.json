@@ -4,7 +4,7 @@
   "engineFactory": "org.example.similarproduct.SimilarProductEngine",
   "datasource": {
     "params" : {
-      "appName": "INVALID_APP_NAME"
+      "appName": "m2m"
     }
   },
   "algorithms": [
