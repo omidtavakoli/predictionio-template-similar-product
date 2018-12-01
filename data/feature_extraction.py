@@ -70,7 +70,7 @@ def import_events(output):
         for movie in movies_collection.find({"_id": str(item_id)}, {"_source.categories": 1}):
             try:
                 for item in movie['_source']['categories']:
-                    this_movie_category.append(all_categories.index(item['label']))
+                    this_movie_category.append(all_categories.index(item['label'])+1)
 
             except KeyError:
                 # not_catgory.append(item_id)
@@ -81,7 +81,7 @@ def import_events(output):
                 'event': '$set',
                 'entityType': 'item',
                 'entityId': item_id,
-                'categories': this_movie_category if len(this_movie_category) > 0 else [1000]
+                'categories': this_movie_category if len(this_movie_category) > 0 else [0]
             })
             movie_count += 1
         else:
