@@ -30,23 +30,23 @@ def import_events(output):
     count = 0
     user_count = 0
     movie_count = 0
-    interacts_threshold = 15000000
+    interacts_threshold = 15
 
     print("Importing data...")
 
     # query for all distinct user ids
-    user_ids = interacts_collection.find().distinct("userid")
-    for user_id in user_ids:
-        print("Set user", user_id)
-        try:
-            append_record({
-                'event': '$set',
-                'entityType': 'user',
-                'entityId': user_id
-            })
-        except:
-            print("Error")
-        user_count += 1
+    # user_ids = interacts_collection.find().distinct("userid")
+    # for user_id in user_ids:
+    #     print("Set user", user_id)
+    #     try:
+    #         append_record({
+    #             'event': '$set',
+    #             'entityType': 'user',
+    #             'entityId': user_id
+    #         })
+    #     except:
+    #         print("Error")
+    #     user_count += 1
 
     # getting all categories
     items = movies_collection.find().distinct("_source.categories")
@@ -54,7 +54,7 @@ def import_events(output):
     for category in items:
         all_categories.append(category['label'])
 
-    # quey for all distinct movie ids
+    # # quey for all distinct movie ids
     items = movies_collection.find().distinct("_id")
 
     item_ids = []
@@ -81,7 +81,7 @@ def import_events(output):
                 'event': '$set',
                 'entityType': 'item',
                 'entityId': item_id,
-                'categories': this_movie_category
+                'categories': this_movie_category if len(this_movie_category) > 0 else [1000]
             })
             movie_count += 1
         else:
