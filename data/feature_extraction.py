@@ -5,18 +5,17 @@ import json
 import newlinejson as nlj
 from bson import json_util
 
-SEED = 3
 
 mongo_client = MongoClient('els9.saba-e.com', 27028)
 db = mongo_client.recom
 interacts_collection = db.interacts
 movies_collection = db.movies
+pio_input_collection = db.pio_input
 data = {}
 data['events'] = []
 
 
 def import_events(output):
-    random.seed(SEED)
     count = 0
     user_count = 0
     movie_count = 0
