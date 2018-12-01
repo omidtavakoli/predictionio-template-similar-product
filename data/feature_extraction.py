@@ -75,17 +75,14 @@ def import_events(output):
             except KeyError:
                 # not_catgory.append(item_id)
                 print('not category for movie ', item_id)
-        if(len(this_movie_category) > 0):       
-            print("Set item", item_id)
-            append_record({
-                'event': '$set',
-                'entityType': 'item',
-                'entityId': item_id,
-                'categories': this_movie_category if len(this_movie_category) > 0 else [0]
-            })
-            movie_count += 1
-        else:
-            print("movie %d removed due to not categorized", item_id)
+        print("Set item", item_id)
+        append_record({
+            'event': '$set',
+            'entityType': 'item',
+            'entityId': item_id,
+            'categories': this_movie_category if len(this_movie_category) > 0 else [0]
+        })
+        movie_count += 1
 
     # add users interaction events
     for inter in interacts_collection.find().limit(interacts_threshold):
