@@ -90,7 +90,7 @@ def import_events(output):
     # add users interaction events
     for inter in interacts_collection.find().limit(interacts_threshold):
         print("User", inter['userid'], "views item", inter['movie_id'])
-        if(inter['duration'] > 0)
+        if(inter['duration'] > 0):
             if(inter['last_watch_position'] / inter['duration'] > 0.5):
                 append_record({
                     'event': 'view',
