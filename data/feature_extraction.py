@@ -19,10 +19,10 @@ data = {}
 data['events'] = []
 not_catgory = []
 
-f= open("events.json","w+")
+# f= open("events.json","w+")
 
 def append_record(record):
-    with open('temp.json', 'a') as f:
+    with open('event.json', 'a') as f:
         json.dump(record, f)
         f.write(os.linesep)
 
