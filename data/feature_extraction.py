@@ -10,7 +10,7 @@ import os
 mongo_client = MongoClient('els9.saba-e.com', 27028)
 db = mongo_client.recom
 interacts_collection = db.interacts
-movies_collection = db.movies
+movies_collection = db.new_movies
 pio_users_input_collection = db.pio_input
 pio_movies_input_collection = db.pio_input
 pio__input_collection = db.pio_input
