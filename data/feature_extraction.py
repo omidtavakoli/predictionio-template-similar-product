@@ -30,7 +30,7 @@ def import_events(output):
     count = 0
     user_count = 0
     movie_count = 0
-    interacts_threshold = 15
+    interacts_threshold = 15000000
 
     print("Importing data...")
 
