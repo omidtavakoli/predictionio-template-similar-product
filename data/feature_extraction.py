@@ -17,7 +17,6 @@ pio__input_collection = db.pio_input
 
 data = {}
 data['events'] = []
-not_catgory = []
 
 def append_record(record):
     with open('event.json', 'a') as f:
@@ -35,7 +34,7 @@ def import_events(output):
     # query for all distinct user ids
     user_ids = interacts_collection.find().distinct("userid")
     for user_id in user_ids:
-        print("Set user %d from %d", (user_count, len(user_ids)))
+        print("Set user %d from %d" % (user_count, len(user_ids)))
         try:
             append_record({
                 'event': '$set',
@@ -71,9 +70,8 @@ def import_events(output):
                     this_movie_category.append(all_categories.index(item['label'])+1)
 
             except KeyError:
-                # not_catgory.append(item_id)
                 print('not category for movie ', item_id)
-        print("Set item %d from %d", (movie_count, len(item_ids)))
+        print("Set item %d from %d" % (movie_count, len(item_ids)))
         append_record({
             'event': '$set',
             'entityType': 'item',
@@ -85,8 +83,7 @@ def import_events(output):
     # add users interaction events
     interactions = interacts_collection.find().limit(interacts_threshold)
     for inter in interactions:
-        print("User", inter['userid'], "views item", inter['movie_id'])
-        print("Set interactions %d from %d", (count, interacts_threshold))
+        print("Set interactions %d from %d. User %d views item %d" % (count, interacts_threshold, inter['userid'], inter['movie_id']))
         if(inter['duration'] > 0):
             if(inter['last_watch_position'] / inter['duration'] > 0.5):
                 append_record({
@@ -99,7 +96,6 @@ def import_events(output):
                 count += 1
 
     print("All users:%d, All Movies:%d, All Events: . Engine trained with %s events are imported with %s users and %s movies." % (len(user_ids), len(item_ids), count, user_count, movie_count))
-    # print(not_catgory)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
