@@ -35,18 +35,18 @@ def import_events(output):
     print("Importing data...")
 
     # query for all distinct user ids
-    # user_ids = interacts_collection.find().distinct("userid")
-    # for user_id in user_ids:
-    #     print("Set user", user_id)
-    #     try:
-    #         append_record({
-    #             'event': '$set',
-    #             'entityType': 'user',
-    #             'entityId': user_id
-    #         })
-    #     except:
-    #         print("Error")
-    #     user_count += 1
+    user_ids = interacts_collection.find().distinct("userid")
+    for user_id in user_ids:
+        print("Set user", user_id)
+        try:
+            append_record({
+                'event': '$set',
+                'entityType': 'user',
+                'entityId': user_id
+            })
+        except:
+            print("Error")
+        user_count += 1
 
     # getting all categories
     items = movies_collection.find().distinct("_source.categories")
