@@ -161,6 +161,6 @@ if __name__ == '__main__':
     # args = parser.parse_args()
     # print(args)
     print(sys.argv)
-    if 'users' in sys.argv: import_users("events.json")
-    if 'items' in sys.argv: import_items("events.json")
+    if 'users' in sys.argv: import_users("users.json")
+    if 'items' in sys.argv: import_items("items.json")
     if 'interactions' in sys.argv: import_interactions("events.json")
