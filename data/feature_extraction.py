@@ -25,7 +25,7 @@ items_data['items'] = []
 interactions_data = {}
 interactions_data['interacts'] = []
 
-interacts_threshold = 10000000
+interacts_threshold = 10
 
 def append_record(record):
     with open('events.json', 'a') as f:
