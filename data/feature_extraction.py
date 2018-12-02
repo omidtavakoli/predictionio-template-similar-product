@@ -105,7 +105,7 @@ def import_items(output):
 
 
 def import_interactions(output):
-    interacts_threshold = 10
+    interacts_threshold = 10000000
     count = 0
     print("Importing interactions data...")
     # add users interaction events
@@ -185,7 +185,7 @@ if __name__ == '__main__':
     # parser.add_argument('--output', default="events.json")
     # args = parser.parse_args()
     # print(args)
-    print(sys.argv)
+    # print(sys.argv)
     if 'users' in sys.argv: import_users("users.json")
     if 'items' in sys.argv: import_items("items.json")
     if 'interactions' in sys.argv: import_interactions("interactions.json")
