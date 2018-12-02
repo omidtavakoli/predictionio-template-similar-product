@@ -152,6 +152,26 @@ def import_interactions(output):
             outfile.write(json_util.dumps(document) + '\n')
     print("%d interactions imported." % (count))
 
+def appending():
+
+    users = open("users.json", "r")
+    users_data = items.read()
+    users.close()
+
+    items = open("items.json", "r")
+    items_data = items.read()
+    items.close()
+
+    interactions = open("interactions.json", "r")
+    interactions_data = users.read()
+    interactions.close()
+
+    interactions = open("interactions.json", "a")
+    interactions.write(users_data)
+    interactions.write(items_data)
+    interactions.write(interactions_data)
+    interactions.close()
+
 if __name__ == '__main__':
     # parser = argparse.ArgumentParser(
         # description="Import sample data for similar product engine")
@@ -163,4 +183,5 @@ if __name__ == '__main__':
     print(sys.argv)
     if 'users' in sys.argv: import_users("users.json")
     if 'items' in sys.argv: import_items("items.json")
-    if 'interactions' in sys.argv: import_interactions("events.json")
+    if 'interactions' in sys.argv: import_interactions("interactions.json")
+    if 'merge' in sys.argv: appending()
