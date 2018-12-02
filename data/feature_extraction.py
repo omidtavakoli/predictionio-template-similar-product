@@ -94,7 +94,7 @@ def import_events(output):
     # add users interaction events
     interactions = interacts_collection.find().limit(interacts_threshold)
     for inter in interactions:
-        print("Set interactions %d from %d. User %d views item %d" % (count, len(interacts_threshold), inter['userid'], inter['movie_id']))
+        print("Set interactions %d from %d. User %d views item %d" % (count, interacts_threshold, inter['userid'], inter['movie_id']))
         if(inter['duration'] > 0):
             # index  = math.ceil((inter['last_watch_position'] / inter['duration']) / 0.5)
             if(inter['last_watch_position'] / inter['duration'] < 0.5):
