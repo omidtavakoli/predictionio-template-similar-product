@@ -166,11 +166,14 @@ def appending():
     interactions_data = interactions.read()
     interactions.close()
 
-    interactions = open("interactions.json", "a")
-    interactions.write(users_data)
-    interactions.write(items_data)
-    interactions.write(interactions_data)
-    interactions.close()
+    events = open("events.json", "a")
+    events.write(users_data+ "\n")
+    events.write(items_data+ "\n")
+    events.write(interactions_data+ "\n")
+    events.close()
+
+    print("merging done to events.json file.")
+
 
 if __name__ == '__main__':
     # parser = argparse.ArgumentParser(
