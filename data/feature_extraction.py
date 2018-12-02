@@ -155,7 +155,7 @@ def import_interactions(output):
 def appending():
 
     users = open("users.json", "r")
-    users_data = items.read()
+    users_data = users.read()
     users.close()
 
     items = open("items.json", "r")
@@ -163,7 +163,7 @@ def appending():
     items.close()
 
     interactions = open("interactions.json", "r")
-    interactions_data = users.read()
+    interactions_data = interactions.read()
     interactions.close()
 
     interactions = open("interactions.json", "a")
