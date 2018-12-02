@@ -114,7 +114,16 @@ def import_interactions(output):
         print("Set interactions %d from %d. User %d views item %d" % (count, interacts_threshold, inter['userid'], inter['movie_id']))
         # if(inter['duration'] > 0):
             # index  = math.ceil((inter['last_watch_position'] / inter['duration']) / 0.5)
-        if(inter['duration'] == 0 || inter['last_watch_position'] / inter['duration'] < 0.5):
+        if inter['duration'] == 0 :
+            interactions_data['interacts'].append({
+                'event': 'view',
+                'entityType': 'user',
+                'entityId': inter['userid'],
+                'targetEntityType': 'item',
+                'targetEntityId': inter['movie_id']
+            })
+            count += 1
+        elif inter['last_watch_position'] / inter['duration'] < 0.5:
             interactions_data['interacts'].append({
                 'event': 'view',
                 'entityType': 'user',
