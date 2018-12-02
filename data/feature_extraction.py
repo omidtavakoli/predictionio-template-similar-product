@@ -25,7 +25,6 @@ items_data['items'] = []
 interactions_data = {}
 interactions_data['interacts'] = []
 
-interacts_threshold = 10
 
 def append_record(record):
     with open('events.json', 'a') as f:
@@ -106,6 +105,7 @@ def import_items(output):
 
 
 def import_interactions(output):
+    interacts_threshold = 10
     count = 0
     print("Importing interactions data...")
     # add users interaction events
