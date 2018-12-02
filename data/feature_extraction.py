@@ -102,7 +102,7 @@ def import_items(output):
     with open(output, 'w') as outfile:
         for document in items_data['items']:
             outfile.write(json_util.dumps(document) + '\n')
-    print("%d items imported." % (len(movie_count)))
+    print("%d items imported." % (movie_count))
 
 
 def import_interactions(output):
@@ -150,7 +150,7 @@ def import_interactions(output):
     with open(output, 'w') as outfile:
         for document in interactions_data['interacts']:
             outfile.write(json_util.dumps(document) + '\n')
-    print("%d interactions imported." % (len(count)))
+    print("%d interactions imported." % (count))
 
 if __name__ == '__main__':
     # parser = argparse.ArgumentParser(
