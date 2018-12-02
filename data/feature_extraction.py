@@ -6,6 +6,7 @@ import newlinejson as nlj
 from bson import json_util
 import os
 import math
+import sys 
 
 mongo_client = MongoClient('els9.saba-e.com', 27028)
 db = mongo_client.recom
@@ -15,40 +16,47 @@ pio_users_input_collection = db.pio_input
 pio_movies_input_collection = db.pio_input
 pio__input_collection = db.pio_input
 
-data = {}
-data['events'] = []
+users_data = {}
+users_data['users'] = []
+
+items_data = {}
+items_data['items'] = []
+
+interactions_data = {}
+interactions_data['interacts'] = []
+
+interacts_threshold = 10000000
 
 def append_record(record):
-    with open('event.json', 'a') as f:
+    with open('events.json', 'a') as f:
         json.dump(record, f)
         f.write(os.linesep)
 
-def import_events(output):
-    count = 0
+def import_users(output):
     user_count = 0
-    movie_count = 0
-    interacts_threshold = 15000000
-
-    print("Importing data...")
-
+    print("Importing users data...")
     # query for all distinct user ids
     user_ids = interacts_collection.find().distinct("userid")
     for user_id in user_ids:
-        print("Set user %d from %d" % (user_count, len(user_ids)))
+        print("%d user imported from %d." % (user_count, len(user_ids)))
         try:
-            data['events'].append({
+            users_data['users'].append({
                 'event': '$set',
                 'entityType': 'user',
                 'entityId': user_id
             })
-            # append_record({
-            #     'event': '$set',
-            #     'entityType': 'user',
-            #     'entityId': user_id
-            # })
         except:
             print("Error")
         user_count += 1
+    
+    with open(output, 'w') as outfile:
+        for document in users_data['users']:
+            outfile.write(json_util.dumps(document) + '\n')
+    print("%d users imported from %d." % (len(user_ids), user_count))
+
+def import_items(output):
+    movie_count = 0
+    print("Importing items data...")
 
     # getting all categories
     items = movies_collection.distinct("_source.categories")
@@ -77,7 +85,7 @@ def import_events(output):
             except KeyError:
                 print('not category for movie ', item_id)
         print("Set item %d from %d" % (movie_count, len(item_ids)))
-        data['events'].append({
+        items_data['items'].append({
             'event': '$set',
             'entityType': 'item',
             'entityId': item_id,
@@ -91,6 +99,15 @@ def import_events(output):
         # })
         movie_count += 1
 
+    with open(output, 'w') as outfile:
+        for document in items_data['items']:
+            outfile.write(json_util.dumps(document) + '\n')
+    print("%d items imported." % (len(movie_count)))
+
+
+def import_interactions(output):
+    count = 0
+    print("Importing interactions data...")
     # add users interaction events
     interactions = interacts_collection.find().limit(interacts_threshold)
     for inter in interactions:
@@ -98,7 +115,7 @@ def import_events(output):
         if(inter['duration'] > 0):
             # index  = math.ceil((inter['last_watch_position'] / inter['duration']) / 0.5)
             if(inter['last_watch_position'] / inter['duration'] < 0.5):
-                data['events'].append({
+                interactions_data['interacts'].append({
                     'event': 'view',
                     'entityType': 'user',
                     'entityId': inter['userid'],
@@ -106,14 +123,14 @@ def import_events(output):
                     'targetEntityId': inter['movie_id']
                 })
             else:
-                data['events'].append({
+                interactions_data['interacts'].append({
                     'event': 'view',
                     'entityType': 'user',
                     'entityId': inter['userid'],
                     'targetEntityType': 'item',
                     'targetEntityId': inter['movie_id']
                 })
-                data['events'].append({
+                interactions_data['interacts'].append({
                     'event': 'view',
                     'entityType': 'user',
                     'entityId': inter['userid'],
@@ -131,17 +148,19 @@ def import_events(output):
 
                 count += 1
     with open(output, 'w') as outfile:
-        for document in data['events']:
+        for document in interactions_data['interacts']:
             outfile.write(json_util.dumps(document) + '\n')
-    print("All users:%d, All Movies:%d, All Events: . Engine trained with %s events are imported with %s users and %s movies." % (len(user_ids), len(item_ids), count, user_count, movie_count))
+    print("%d interactions imported." % (len(count)))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description="Import sample data for similar product engine")
+    # parser = argparse.ArgumentParser(
+        # description="Import sample data for similar product engine")
     # parser.add_argument('--access_key', default='invald_access_key')
     # parser.add_argument('--url', default="http://localhost:7070")
-    parser.add_argument('--output', default="events.json")
-    args = parser.parse_args()
-    print(args)
-
-    import_events(args.output)
+    # parser.add_argument('--output', default="events.json")
+    # args = parser.parse_args()
+    # print(args)
+    print(sys.argv)
+    if 'users' in sys.argv: import_users("events.json")
+    if 'items' in sys.argv: import_items("events.json")
+    if 'interactions' in sys.argv: import_interactions("events.json")
