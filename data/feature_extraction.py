@@ -5,7 +5,7 @@ import json
 import newlinejson as nlj
 from bson import json_util
 import os
-
+import math
 
 mongo_client = MongoClient('els9.saba-e.com', 27028)
 db = mongo_client.recom
@@ -27,7 +27,7 @@ def import_events(output):
     count = 0
     user_count = 0
     movie_count = 0
-    interacts_threshold = 15
+    interacts_threshold = 15000000
 
     print("Importing data...")
 
@@ -94,10 +94,25 @@ def import_events(output):
     # add users interaction events
     interactions = interacts_collection.find().limit(interacts_threshold)
     for inter in interactions:
-        print("Set interactions %d from %d. User %d views item %d" % (count, interacts_threshold, inter['userid'], inter['movie_id']))
+        print("Set interactions %d from %d. User %d views item %d" % (count, len(interactions), inter['userid'], inter['movie_id']))
         if(inter['duration'] > 0):
-            if(inter['last_watch_position'] / inter['duration'] > 0.5):
-
+            # index  = math.ceil((inter['last_watch_position'] / inter['duration']) / 0.5)
+            if(inter['last_watch_position'] / inter['duration'] < 0.5):
+                data['events'].append({
+                    'event': 'view',
+                    'entityType': 'user',
+                    'entityId': inter['userid'],
+                    'targetEntityType': 'item',
+                    'targetEntityId': inter['movie_id']
+                })
+            else:
+                data['events'].append({
+                    'event': 'view',
+                    'entityType': 'user',
+                    'entityId': inter['userid'],
+                    'targetEntityType': 'item',
+                    'targetEntityId': inter['movie_id']
+                })
                 data['events'].append({
                     'event': 'view',
                     'entityType': 'user',
@@ -113,6 +128,7 @@ def import_events(output):
                 #     'targetEntityType': 'item',
                 #     'targetEntityId': inter['movie_id']
                 # })
+
                 count += 1
     with open(output, 'w') as outfile:
         for document in data['events']:
