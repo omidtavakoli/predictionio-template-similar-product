@@ -107,11 +107,12 @@ def import_items(output):
 def import_interactions(output):
     interacts_threshold = 10000000
     count = 0
+    show_count = 0
     print("Importing interactions data...")
     # add users interaction events
     interactions = interacts_collection.find().limit(interacts_threshold)
     for inter in interactions:
-        print("Set interactions %d from %d. User %d views item %d" % (count, interacts_threshold, inter['userid'], inter['movie_id']))
+        print("Set interactions %d from %d. User %d views item %d" % (show_count, interacts_threshold, inter['userid'], inter['movie_id']))
         # if(inter['duration'] > 0):
             # index  = math.ceil((inter['last_watch_position'] / inter['duration']) / 0.5)
         if inter['duration'] == 0 :
@@ -123,6 +124,7 @@ def import_interactions(output):
                 'targetEntityId': inter['movie_id']
             })
             count += 1
+            show_count +=1
         elif inter['last_watch_position'] / inter['duration'] < 0.5:
             interactions_data['interacts'].append({
                 'event': 'view',
@@ -132,6 +134,7 @@ def import_interactions(output):
                 'targetEntityId': inter['movie_id']
             })
             count += 1
+            show_count +=1
         else:
             interactions_data['interacts'].append({
                 'event': 'view',
@@ -148,6 +151,7 @@ def import_interactions(output):
                 'targetEntityId': inter['movie_id']
             })
             count += 2
+            show_count +=1
 
             # append_record({
             #     'event': 'view',
