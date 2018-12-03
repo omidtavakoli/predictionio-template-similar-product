@@ -179,14 +179,14 @@ def import_interactions(output, items):
                 'targetEntityType': 'item',
                 'targetEntityId': inter['movie_id']
             },'interactions.json')
-            append_record({
-                'event': 'view',
-                'entityType': 'user',
-                'entityId': inter['userid'],
-                'targetEntityType': 'item',
-                'targetEntityId': inter['movie_id']
-            },'interactions.json')
-            count += 2
+            # append_record({
+            #     'event': 'view',
+            #     'entityType': 'user',
+            #     'entityId': inter['userid'],
+            #     'targetEntityType': 'item',
+            #     'targetEntityId': inter['movie_id']
+            # },'interactions.json')
+            count += 1
             show_count +=1
 
             # append_record({
