@@ -111,7 +111,7 @@ def import_items(output):
 
 
 def import_interactions(output, items):
-    interacts_threshold = 100
+    interacts_threshold = 1000000
     count = 0
     show_count = 0
     print("Importing interactions data...")
