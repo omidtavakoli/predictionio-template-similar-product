@@ -26,8 +26,8 @@ interactions_data = {}
 interactions_data['interacts'] = []
 
 
-def append_record(record):
-    with open('events.json', 'a') as f:
+def append_record(record, file_name):
+    with open(file_name, 'a') as f:
         json.dump(record, f)
         f.write(os.linesep)
 
@@ -39,18 +39,23 @@ def import_users(output):
     for user_id in user_ids:
         print("%d user imported from %d." % (user_count, len(user_ids)))
         try:
-            users_data['users'].append({
+            # users_data['users'].append({
+            #     'event': '$set',
+            #     'entityType': 'user',
+            #     'entityId': user_id
+            # })
+            append_record({
                 'event': '$set',
                 'entityType': 'user',
                 'entityId': user_id
-            })
+            },'users.json')
         except:
             print("Error")
         user_count += 1
     
-    with open(output, 'w') as outfile:
-        for document in users_data['users']:
-            outfile.write(json_util.dumps(document) + '\n')
+    # with open(output, 'w') as outfile:
+    #     for document in users_data['users']:
+    #         outfile.write(json_util.dumps(document) + '\n')
     print("%d users imported from %d." % (len(user_ids), user_count))
 
 def import_items(output):
@@ -84,72 +89,103 @@ def import_items(output):
             except KeyError:
                 print('not category for movie ', item_id)
         print("Set item %d from %d" % (movie_count, len(item_ids)))
-        items_data['items'].append({
-            'event': '$set',
-            'entityType': 'item',
-            'entityId': item_id,
-            'categories': this_movie_category if len(this_movie_category) > 0 else [0]
-        })
-        # append_record({
+        # items_data['items'].append({
         #     'event': '$set',
         #     'entityType': 'item',
         #     'entityId': item_id,
         #     'categories': this_movie_category if len(this_movie_category) > 0 else [0]
         # })
+        append_record({
+            'event': '$set',
+            'entityType': 'item',
+            'entityId': item_id,
+            'categories': this_movie_category if len(this_movie_category) > 0 else [0]
+        },'items.json')
         movie_count += 1
 
-    with open(output, 'w') as outfile:
-        for document in items_data['items']:
-            outfile.write(json_util.dumps(document) + '\n')
+    # with open(output, 'w') as outfile:
+    #     for document in items_data['items']:
+    #         outfile.write(json_util.dumps(document) + '\n')
     print("%d items imported." % (movie_count))
+    return item_ids
 
 
-def import_interactions(output):
-    interacts_threshold = 10000000
+def import_interactions(output, items):
+    interacts_threshold = 100
     count = 0
     show_count = 0
     print("Importing interactions data...")
     # add users interaction events
-    interactions = interacts_collection.find().limit(interacts_threshold)
+
+    interactions = interacts_collection.find({"movie_id": {"$in":items}})
     for inter in interactions:
+        if show_count > interacts_threshold: break
         print("Set interactions %d from %d. User %d views item %d" % (show_count, interacts_threshold, inter['userid'], inter['movie_id']))
         # if(inter['duration'] > 0):
             # index  = math.ceil((inter['last_watch_position'] / inter['duration']) / 0.5)
         if inter['duration'] == 0 :
-            interactions_data['interacts'].append({
+            # interactions_data['interacts'].append({
+            #     'event': 'view',
+            #     'entityType': 'user',
+            #     'entityId': inter['userid'],
+            #     'targetEntityType': 'item',
+            #     'targetEntityId': inter['movie_id']
+            # })
+            append_record({
                 'event': 'view',
                 'entityType': 'user',
                 'entityId': inter['userid'],
                 'targetEntityType': 'item',
                 'targetEntityId': inter['movie_id']
-            })
+            },'interactions.json')
             count += 1
             show_count +=1
         elif inter['last_watch_position'] / inter['duration'] < 0.5:
-            interactions_data['interacts'].append({
+            # interactions_data['interacts'].append({
+            #     'event': 'view',
+            #     'entityType': 'user',
+            #     'entityId': inter['userid'],
+            #     'targetEntityType': 'item',
+            #     'targetEntityId': inter['movie_id']
+            # })
+            append_record({
                 'event': 'view',
                 'entityType': 'user',
                 'entityId': inter['userid'],
                 'targetEntityType': 'item',
                 'targetEntityId': inter['movie_id']
-            })
+            },'interactions.json')
             count += 1
             show_count +=1
         else:
-            interactions_data['interacts'].append({
+            # interactions_data['interacts'].append({
+            #     'event': 'view',
+            #     'entityType': 'user',
+            #     'entityId': inter['userid'],
+            #     'targetEntityType': 'item',
+            #     'targetEntityId': inter['movie_id']
+            # })
+            # interactions_data['interacts'].append({
+            #     'event': 'view',
+            #     'entityType': 'user',
+            #     'entityId': inter['userid'],
+            #     'targetEntityType': 'item',
+            #     'targetEntityId': inter['movie_id']
+            # })
+            append_record({
                 'event': 'view',
                 'entityType': 'user',
                 'entityId': inter['userid'],
                 'targetEntityType': 'item',
                 'targetEntityId': inter['movie_id']
-            })
-            interactions_data['interacts'].append({
+            },'interactions.json')
+            append_record({
                 'event': 'view',
                 'entityType': 'user',
                 'entityId': inter['userid'],
                 'targetEntityType': 'item',
                 'targetEntityId': inter['movie_id']
-            })
+            },'interactions.json')
             count += 2
             show_count +=1
 
@@ -162,9 +198,9 @@ def import_interactions(output):
             # })
 
                 
-    with open(output, 'w') as outfile:
-        for document in interactions_data['interacts']:
-            outfile.write(json_util.dumps(document) + '\n')
+    # with open(output, 'w') as outfile:
+    #     for document in interactions_data['interacts']:
+    #         outfile.write(json_util.dumps(document) + '\n')
     print("%d interactions imported." % (count))
 
 def appending():
@@ -199,7 +235,10 @@ if __name__ == '__main__':
     # args = parser.parse_args()
     # print(args)
     # print(sys.argv)
-    if 'users' in sys.argv: import_users("users.json")
-    if 'items' in sys.argv: import_items("items.json")
-    if 'interactions' in sys.argv: import_interactions("interactions.json")
-    if 'merge' in sys.argv: appending()
+    if 'users' in sys.argv: 
+        import_users("users.json")
+    if 'interactions' in sys.argv:
+        items = import_items("items.json")
+        import_interactions("interactions.json", items)
+    if 'merge' in sys.argv: 
+        appending()
